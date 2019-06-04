@@ -2,7 +2,7 @@
      <v-layout align-start> 
           <v-flex>
                <v-toolbar flat color="white">
-                         <v-toolbar-title>My CRUD</v-toolbar-title>
+                         <v-toolbar-title>Lista de Conductores</v-toolbar-title>
                               <v-divider
                                 class="mx-2"
                                 inset
@@ -11,7 +11,7 @@
                               <v-spacer></v-spacer>
                               <v-dialog v-model="dialog" max-width="500px">
                                 <template v-slot:activator="{ on }">
-                                  <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+                                  <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo</v-btn>
                                 </template>
                                 <v-card>
                                   <v-card-title>
@@ -22,19 +22,28 @@
                                     <v-container grid-list-md>
                                       <v-layout wrap>
                                         <v-flex xs12 sm6 md4>
-                                          <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field>
+                                          <v-text-field v-model="editedItem.codigo" label="Codigo"></v-text-field>
                                         </v-flex>
                                         <v-flex xs12 sm6 md4>
-                                          <v-text-field v-model="editedItem.calories" label="Calories"></v-text-field>
+                                          <v-text-field v-model="editedItem.nombre" label="Nombre"></v-text-field>
                                         </v-flex>
                                         <v-flex xs12 sm6 md4>
-                                          <v-text-field v-model="editedItem.fat" label="Fat (g)"></v-text-field>
+                                          <v-text-field v-model="editedItem.apellido" label="Apellido"></v-text-field>
                                         </v-flex>
                                         <v-flex xs12 sm6 md4>
-                                          <v-text-field v-model="editedItem.carbs" label="Carbs (g)"></v-text-field>
+                                          <v-text-field v-model="editedItem.email" label="E-mail"></v-text-field>
                                         </v-flex>
                                         <v-flex xs12 sm6 md4>
-                                          <v-text-field v-model="editedItem.protein" label="Protein (g)"></v-text-field>
+                                          <v-text-field v-model="editedItem.celular" label="Celular"></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12 sm6 md4>
+                                          <v-text-field v-model="editedItem.placa" label="Placa"></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12 sm6 md4>
+                                          <v-text-field v-model="editedItem.edad" label="Edad"></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12 sm6 md4>
+                                          <v-text-field v-model="editedItem.disponible" label="Disponible"></v-text-field>
                                         </v-flex>
                                       </v-layout>
                                     </v-container>
@@ -50,15 +59,18 @@
                          </v-toolbar>
                          <v-data-table
                               :headers="headers"
-                              :items="desserts"
+                              :items="conductores"
                               class="elevation-1"
                             >
                               <template v-slot:items="props">
-                                <td>{{ props.item.name }}</td>
-                                <td class="text-xs-right">{{ props.item.calories }}</td>
-                                <td class="text-xs-right">{{ props.item.fat }}</td>
-                                <td class="text-xs-right">{{ props.item.carbs }}</td>
-                                <td class="text-xs-right">{{ props.item.protein }}</td>
+                                <td>{{ props.item.codigo }}</td>
+                                <td class="text-xs-right">{{ props.item.nombre }}</td>
+                                <td class="text-xs-right">{{ props.item.apellido }}</td>
+                                <td class="text-xs-right">{{ props.item.email }}</td>
+                                <td class="text-xs-right">{{ props.item.celular }}</td>
+                                <td class="text-xs-right">{{ props.item.placa }}</td>
+                                <td class="text-xs-right">{{ props.item.edad }}</td>
+                                <td class="text-xs-right">{{ props.item.disponible }}</td>
                                 <td class="justify-center layout px-0">
                                   <v-icon
                                     small
@@ -76,51 +88,63 @@
                                 </td>
                               </template>
                               <template v-slot:no-data>
-                                <v-btn color="primary" @click="initialize">Reset</v-btn>
+                                <h1 color="primary" @click="getConductores">Sin Datos</h1>
                               </template>
              </v-data-table>          
           </v-flex>
      </v-layout>                
 </template>
 <script>
+import db from '../db'
+
      export default {
           data(){
                return {
                     dialog: false,
                     headers: [
                          {
-                         text: 'Dessert (100g serving)',
-                         align: 'left',
-                         sortable: false,
-                         value: 'name'
+                         text: 'Codigo',
+                         align: 'center',
+                         sortable: true,
+                         value: 'codigo'
                          },
-                         { text: 'Calories', value: 'calories' },
-                         { text: 'Fat (g)', value: 'fat' },
-                         { text: 'Carbs (g)', value: 'carbs' },
-                         { text: 'Protein (g)', value: 'protein' },
-                         { text: 'Actions', value: 'name', sortable: false }
+                         { text: 'Nombre', value: 'nombre' },
+                         { text: 'Apellido', value: 'apellido' },
+                         { text: 'E-mail', align: 'center', value: 'email' },
+                         { text: 'Celular', value: 'celular' },
+                         { text: 'Placa', value: 'placa'},
+                         { text: 'Edad', align: 'center', value: 'edad'}, 
+                         { text: 'Disponible', align: 'center', value: 'disponible'},
+                         { text: 'Acciones', value: 'nombre',
+                         sortable: false }
                     ],
-                    desserts: [],
-                    editedIndex: -1,
+                    conductores: [],
+                    editedIndex: -1, //---->si borramos esto desaparece el crud
                     editedItem: {
-                         name: '',
-                         calories: 0,
-                         fat: 0,
-                         carbs: 0,
-                         protein: 0
-                    },
+                         codigo: '',
+                         nombre: '',
+                         apellido: '',
+                         email: '',
+                         celular: '',
+                         placa: '',
+                         edad: '',
+                         disponible: true
+                                },
                     defaultItem: {
-                         name: '',
-                         calories: 0,
-                         fat: 0,
-                         carbs: 0,
-                         protein: 0
-                    }
-                                   }
+                         nombre: '',
+                         apellido: '',
+                         email: '',
+                         celular: '',
+                         placa: '',
+                         edad: '',
+                         disponible: true
+                                    }
+                          }
           },
+  
           computed: {
           formTitle () {
-               return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+               return this.editedIndex === -1 ? 'Nuevo' : 'Editar'
           }
           },
 
@@ -131,93 +155,30 @@
           },
 
           created () {
-          this.initialize()
+          this.getConductores()
           },
           methods:{
-               initialize () {
-               this.desserts = [
-               {
-                    name: 'Frozen Yogurt',
-                    calories: 159,
-                    fat: 6.0,
-                    carbs: 24,
-                    protein: 4.0
-               },
-               {
-                    name: 'Ice cream sandwich',
-                    calories: 237,
-                    fat: 9.0,
-                    carbs: 37,
-                    protein: 4.3
-               },
-               {
-                    name: 'Eclair',
-                    calories: 262,
-                    fat: 16.0,
-                    carbs: 23,
-                    protein: 6.0
-               },
-               {
-                    name: 'Cupcake',
-                    calories: 305,
-                    fat: 3.7,
-                    carbs: 67,
-                    protein: 4.3
-               },
-               {
-                    name: 'Gingerbread',
-                    calories: 356,
-                    fat: 16.0,
-                    carbs: 49,
-                    protein: 3.9
-               },
-               {
-                    name: 'Jelly bean',
-                    calories: 375,
-                    fat: 0.0,
-                    carbs: 94,
-                    protein: 0.0
-               },
-               {
-                    name: 'Lollipop',
-                    calories: 392,
-                    fat: 0.2,
-                    carbs: 98,
-                    protein: 0
-               },
-               {
-                    name: 'Honeycomb',
-                    calories: 408,
-                    fat: 3.2,
-                    carbs: 87,
-                    protein: 6.5
-               },
-               {
-                    name: 'Donut',
-                    calories: 452,
-                    fat: 25.0,
-                    carbs: 51,
-                    protein: 4.9
-               },
-               {
-                    name: 'KitKat',
-                    calories: 518,
-                    fat: 26.0,
-                    carbs: 65,
-                    protein: 7
-               }
-               ]
+               getConductores () {
+                db.collection('Conductor').get().then(
+                  querySnapshot => {
+                  const conductores = []
+
+                  querySnapshot.forEach(element => {
+                  conductores.push(element.data())
+              })
+              this.conductores = conductores
+            })
           },
 
           editItem (item) {
-               this.editedIndex = this.desserts.indexOf(item)
+               this.editedIndex = this.conductores.indexOf(item)
                this.editedItem = Object.assign({}, item)
                this.dialog = true
           },
 
           deleteItem (item) {
-               const index = this.desserts.indexOf(item)
-               confirm('Are you sure you want to delete this item?') && this.desserts.splice(index, 1)
+               const index = this.conductores.indexOf(item)
+               confirm('Esta seguro que desea eliminarlo?') && this.conductores.splice(index, 1)
           },
 
           close () {
@@ -230,12 +191,16 @@
 
           save () {
                if (this.editedIndex > -1) {
-               Object.assign(this.desserts[this.editedIndex], this.editedItem)
+               Object.assign(this.conductores[this.editedIndex], this.editedItem)
                } else {
-               this.desserts.push(this.editedItem)
+               
+               db.collection('Conductor').add(this.
+               editedItem).then(this.getConductores)
                }
                this.close()
                }    
           }
      }
 </script>
+//db.collection('Conductor'.add(this.
+  //            editItem).then(this.getConductores))
