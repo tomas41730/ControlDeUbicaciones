@@ -29,6 +29,7 @@
       <v-content>
           <v-container fluid fill-height>
             <v-slide-y-transition mode="out-in">
+              
             </v-slide-y-transition> 
             <router-view/>
           </v-container>
