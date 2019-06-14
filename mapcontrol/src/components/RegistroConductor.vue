@@ -130,6 +130,16 @@ import db from '../db'
                          edad: '',
                          disponible: true
                                 },
+                    updateItem: {
+                         nombre: '',
+                         apellido: '',
+                         email: '',
+                         celular: '',
+                         placa: '',
+                         edad: '',
+                         disponible: true
+                                },
+                      editId: '',
                     defaultItem: {
                          nombre: '',
                          apellido: '',
@@ -173,7 +183,7 @@ import db from '../db'
           editItem (item) {
                this.editedIndex = this.conductores.indexOf(item)
                this.editedItem = Object.assign({}, item)
-               this.dialog = true
+               this.dialog = true  
           },
 
           deleteItem (item) {
@@ -196,6 +206,7 @@ import db from '../db'
                
                db.collection('Conductor').add(this.
                editedItem).then(this.getConductores)
+               firebase.auth().createUserWithEmailAndPassword(editedItem.email, 'Password123')
                }
                this.close()
                }    
@@ -204,3 +215,28 @@ import db from '../db'
 </script>
 //db.collection('Conductor'.add(this.
   //            editItem).then(this.getConductores))
+
+
+  db.collection('Conductor')
+                 .where('codigo', '==', this.editId).get()
+                 .then(querySnapshot => {
+                   querySnapshot.forEach(doc => {
+                     doc.ref.set({
+                       codigo: this.codigo,
+                       nombre: this.nombre,
+                       apellido: this.apellido,
+                       email: this.email,
+                       celular: this.celular,
+                       placa: this.placa,
+                       edad: this.edad
+                     }).then(this.getConductores)
+                   })
+                   this.close()
+                 })
+                   this.editId = item.codigo
+               this.editedItem.nombre = item.nombre
+               this.editedItem.apellido = item.apellido
+               this.editedItem.email = item.email
+               this.editedItem.celular = item.celular
+               this.editedItem.placa = item.placa
+               this.editedItem.edad = item.edad

@@ -43,6 +43,5 @@ import db from '../db'
   display: flex;
   justify-content: space-between;
   background: white;
-  border-color: rgb(0, 0, 0);
 }
 </style>
